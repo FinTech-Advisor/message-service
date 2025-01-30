@@ -18,6 +18,12 @@ public class Message {
     @Id @GeneratedValue
     private Long seq;
 
+    @Column(length = 45, nullable = false)
+    private String mid;
+
+    @Column(length = 45, nullable = false)
+    private String name; // ex)bid -> freetalk 일경우 name은 자유게시판 name은 한국어 변환시켰다고 생각하기 freetalk -> 자유게시판 / QNA -> 질의문답
+
     @Column(length=45, nullable = false)
     private String gid;
 

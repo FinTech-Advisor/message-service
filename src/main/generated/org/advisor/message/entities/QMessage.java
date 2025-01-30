@@ -25,6 +25,10 @@ public class QMessage extends EntityPathBase<Message> {
 
     public final StringPath gid = createString("gid");
 
+    public final StringPath mid = createString("mid");
+
+    public final StringPath name = createString("name");
+
     public final BooleanPath notice = createBoolean("notice");
 
     public final StringPath receiver = createString("receiver");

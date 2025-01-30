@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/message")
 public class MessageController {
 
-    private final MessageService messageService;
-    private final MemberUtil memberUtil;
-    private final MessageValidator messageValidator;
     private final Utils utils;
+    private final MessageService messageService;
+    private final MessageValidator messageValidator;
+    private final MemberUtil memberUtil;
+
 
     /*
     @GetMapping("/write/{bid}")
@@ -29,8 +30,8 @@ public class MessageController {
     }
     */
 
-    @PostMapping("/send/{bid}")
-    public JSONData send(@RequestBody @Valid RequestMessage request, @PathVariable String bid, Errors errors) {
+    @PostMapping("/send/{mid}")
+    public JSONData send(@RequestBody @Valid RequestMessage request, @PathVariable String mid, Errors errors) {
         // 문의 메세지(회원이 관리자에게) - 검증을 통해 에러가 발견되지 않았다면 메세지 전송에 성공
         messageValidator.validate(request, errors);
         if (errors.hasErrors()) {
@@ -40,13 +41,10 @@ public class MessageController {
         return null;
     }
 
-    @PostMapping("/notice/send")
+    @PostMapping("/send")
     public JSONData sendNo(@RequestBody @Valid RequestMessage request, Errors errors) {
         // 문의 메세지(회원이 관리자에게) - 검증을 통해 에러가 발견되지 않았다면 메세지 전송에 성공
-        if(!memberUtil.isAdmin()) {
-            throw new BadRequestException(utils.getErrorMessages());
-        }
-        // 공지 메시지에 대한 추가 검증 수행
+
         messageValidator.validate(request, errors);
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));
@@ -61,9 +59,10 @@ public class MessageController {
         return null;
     }
 
-    @GetMapping("/view/{seq}")
-    public JSONData view(@PathVariable("seq") Long seq) {
+    @GetMapping("/info/{seq}")
+    public JSONData info(@PathVariable("seq") Long seq) {
         // 메세지 상세보기 / 회원 - 공지 알림, 이상 거래 알림, 본인이 보낸 문의 메시지 / 관리자 - 공지 알림, 이상 거래 알림, 모든 회원이 보낸 메시지 상세
+        // 회원 -> 관리자에게 송신?
         messageService.viewMessage(seq);
         return null;
     }
