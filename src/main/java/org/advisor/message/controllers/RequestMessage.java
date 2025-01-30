@@ -12,7 +12,6 @@ public class RequestMessage {
 
     private Long seq; // 회원 번호
 
-    @NotBlank
     private String mid; // 메세지 id , 공지사항 알림인지, 회원들 이슈들, 개인에게 보내질 것들 세부적으로 나눌 것들을 mid 로 지정해서 분류
 
     @NotBlank

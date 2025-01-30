@@ -5,9 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.advisor.globals.exceptions.BadRequestException;
 import org.advisor.globals.libs.Utils;
 import org.advisor.globals.rests.JSONData;
-import org.advisor.member.MemberUtil;
 import org.advisor.message.entities.Message;
-import org.advisor.message.service.MessageService;
+import org.advisor.message.service.MessageInfoService;
 import org.advisor.message.validations.MessageValidator;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +17,8 @@ import org.springframework.web.bind.annotation.*;
 public class MessageController {
 
     private final Utils utils;
-    private final MessageService messageService;
+    private final MessageInfoService messageInfoService;
     private final MessageValidator messageValidator;
-    private final MemberUtil memberUtil;
 
 
     /*
@@ -38,7 +36,7 @@ public class MessageController {
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
-        Message message = messageService.sendMessage(request);
+        Message message = messageInfoService.sendMessage(request);
         return new JSONData(message);
     }
 
@@ -50,7 +48,7 @@ public class MessageController {
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
-        Message message = messageService.sendMessage(request);
+        Message message = messageInfoService.sendMessage(request);
         return new JSONData(message);
     }
 
@@ -64,7 +62,7 @@ public class MessageController {
     public JSONData info(@PathVariable("seq") Long seq) {
         // 메세지 상세보기 / 회원 - 공지 알림, 이상 거래 알림, 본인이 보낸 문의 메시지 / 관리자 - 공지 알림, 이상 거래 알림, 모든 회원이 보낸 메시지 상세
         // 회원 -> 관리자에게 송신?
-        Message message = messageService.viewMessage(seq).orElseThrow(
+        Message message = messageInfoService.viewMessage(seq).orElseThrow(
                 () -> new BadRequestException("해당 메시지를 찾을 수 없습니다.")
         );
         return new JSONData(message);

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.advisor.globals.exceptions.BadRequestException;
 import org.advisor.globals.rests.JSONData;
 import org.advisor.member.MemberUtil;
-import org.advisor.message.service.MessageService;
+import org.advisor.message.service.MessageInfoService;
 import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +17,7 @@ import java.util.Locale;
 public class MessageAdminController {
 
     private final MemberUtil memberUtil;
-    private final MessageService messageService;
+    private final MessageInfoService messageInfoService;
     private final MessageSource messageSource;
 
     /**
@@ -28,7 +28,7 @@ public class MessageAdminController {
         if (!memberUtil.isAdmin()) {
             throw new BadRequestException(messageSource.getMessage("error.admin_only", null, Locale.getDefault()));
         }
-        return new JSONData(messageService.sendMessage(request));
+        return new JSONData(messageInfoService.sendMessage(request));
     }
 
     /**
@@ -39,7 +39,7 @@ public class MessageAdminController {
         if (!memberUtil.isAdmin()) {
             throw new BadRequestException(messageSource.getMessage("error.admin_only", null, Locale.getDefault()));
         }
-        return new JSONData(messageService.sendMessage(request));
+        return new JSONData(messageInfoService.sendMessage(request));
     }
 
     /**
@@ -50,7 +50,7 @@ public class MessageAdminController {
         if (!memberUtil.isAdmin()) {
             throw new BadRequestException(messageSource.getMessage("error.admin_only", null, Locale.getDefault()));
         }
-        return new JSONData(messageService.listMessages(mid));
+        return new JSONData(messageInfoService.listMessages(mid));
     }
 
     /**
@@ -61,6 +61,6 @@ public class MessageAdminController {
         if (!memberUtil.isAdmin()) {
             throw new BadRequestException(messageSource.getMessage("error.admin_only", null, Locale.getDefault()));
         }
-        return new JSONData(messageService.viewMessage(seq));
+        return new JSONData(messageInfoService.viewMessage(seq));
     }
 }

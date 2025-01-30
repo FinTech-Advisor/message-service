@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class MessageService {
+public class MessageInfoService {
 
     private final MessageRepository messageRepository;
 
