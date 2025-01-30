@@ -13,14 +13,16 @@ public class MessageController {
 
     private final MessageService messageService;
 
+    /*
     @GetMapping("/write/{bid}")
     public JSONData write(@PathVariable String bid) {
         // 작성 폼으로 이동
         return null;
     }
+    */
 
-    @PostMapping("/send")
-    public JSONData send(@RequestBody @Valid RequestMessage request) {
+    @PostMapping("/send/{bid}")
+    public JSONData send(@RequestBody @Valid RequestMessage request, String bid) {
         // 문의 메세지(회원이 관리자에게) - 검증을 통해 에러가 발견되지 않았다면 메세지 전송에 성공
         messageService.sendMessage(request);
         return null;
@@ -32,7 +34,7 @@ public class MessageController {
         return null;
     }
 
-    @GetMapping
+    @GetMapping("/list/{bid}")
     public JSONData list(@PathVariable("bid") String bid) {
         // 탭 형식을 사용해 페이지 이동을 하지 않아도 되도록
         return null;

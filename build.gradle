@@ -47,6 +47,8 @@ dependencies {
 	implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
 	annotationProcessor'com.querydsl:querydsl-apt:5.1.0:jakarta'
 
+	implementation 'com.oracle.database.jdbc:ojdbc8'
+
 	testImplementation 'org.springframework.security:spring-security-test'
 
 	implementation 'org.modelmapper:modelmapper:3.2.1'

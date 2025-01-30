@@ -10,6 +10,10 @@ public class RequestMessage {
     @Email
     private String email; // 이메일 형식
 
+    private Long seq; // 회원 번호
+
+    private String bid; // 게시글 id
+
     @NotBlank
     private String gid; // 그룹 id
 
