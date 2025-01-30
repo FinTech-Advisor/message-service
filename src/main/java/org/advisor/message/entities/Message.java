@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.advisor.message.constants.MessageStatus;
 
+import java.time.LocalDateTime;
+
 @Data
 @Entity
 @Builder
@@ -35,4 +37,10 @@ public class Message {
     @Lob
     @Column(nullable = false)
     private String content;
+
+    @Column(nullable = false)
+    private Boolean notice; // 인덱스에서 사용됨
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 }

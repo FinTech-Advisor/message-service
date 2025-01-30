@@ -21,7 +21,11 @@ public class QMessage extends EntityPathBase<Message> {
 
     public final StringPath content = createString("content");
 
+    public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
+
     public final StringPath gid = createString("gid");
+
+    public final BooleanPath notice = createBoolean("notice");
 
     public final StringPath receiver = createString("receiver");
 
