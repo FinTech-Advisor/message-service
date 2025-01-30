@@ -4,25 +4,20 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-
-
-import java.util.List;
-
 @Data
 public class RequestMessage {
 
-
     @Email
-    private String email;
+    private String email; // 이메일 형식
 
     @NotBlank
-    private String gid;
+    private String gid; // 그룹 id
 
     @NotBlank
-    private String subject;
+    private String subject; // 제목
 
     @NotBlank
-    private String content;
+    private String content; // 내용
 
     /*
     private List<FileInfo> editorImages;
