@@ -29,6 +29,7 @@ public class MessageService {
         return messageRepository.save(message); // 메세지 DB에 저장
     }
 
+
     // 메시지 조회 시 상태 변경 (UNREAD → READ)
     public Optional<Message> viewMessage(Long seq) {
         Optional<Message> messageOpt = messageRepository.findById(seq);
