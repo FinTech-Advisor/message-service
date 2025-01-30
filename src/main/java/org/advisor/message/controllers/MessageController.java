@@ -44,9 +44,13 @@ public class MessageController {
     public JSONData sendNo(@RequestBody @Valid RequestMessage request, Errors errors) {
         // 문의 메세지(회원이 관리자에게) - 검증을 통해 에러가 발견되지 않았다면 메세지 전송에 성공
         if(!memberUtil.isAdmin()) {
-            throw new BadRequestException();
+            throw new BadRequestException(utils.getErrorMessages());
         }
-        
+        // 공지 메시지에 대한 추가 검증 수행
+        messageValidator.validate(request, errors);
+        if (errors.hasErrors()) {
+            throw new BadRequestException(utils.getErrorMessages(errors));
+        }
 
         return null;
     }
