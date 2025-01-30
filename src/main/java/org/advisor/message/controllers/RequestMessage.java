@@ -7,6 +7,8 @@ import lombok.Data;
 @Data
 public class RequestMessage {
 
+    private boolean notice;
+
     @Email
     private String email; // 이메일 형식
 
