@@ -1,12 +1,14 @@
 package org.advisor.message.service;
 
 import lombok.RequiredArgsConstructor;
+import org.advisor.message.constants.MessageStatus;
 import org.advisor.message.controllers.RequestMessage;
 import org.advisor.message.entities.Message;
+import org.advisor.message.exceptions.MessageNotFoundException;
 import org.advisor.message.repositories.MessageRepository;
 import org.springframework.stereotype.Service;
-import org.advisor.message.constants.MessageStatus;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,9 +28,17 @@ public class MessageService {
                 .status(MessageStatus.UNREAD) // 기본값: 읽지 않음
                 .build();
 
-        return messageRepository.save(message); // 메세지 DB에 저장
+        return messageRepository.save(message); // 메시지 DB에 저장
     }
 
+    // 특정 회원이 받은 메시지 조회
+    public List<Message> listMessages(String mid) {
+        List<Message> messages = messageRepository.findByReceiver(mid);
+        if (messages.isEmpty()) {
+            throw new MessageNotFoundException();
+        }
+        return messages;
+    }
 
     // 메시지 조회 시 상태 변경 (UNREAD → READ)
     public Optional<Message> viewMessage(Long seq) {

@@ -1,4 +1,4 @@
-package org.advisor.globals.configs;
+package org.advisor.global.configs;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,6 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         CorsConfiguration config = new CorsConfiguration();
-
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
 
@@ -31,11 +30,10 @@ public class CorsConfig {
             config.setAllowedOrigins(origins);
             config.setAllowCredentials(true);
         } else {
-            config.addAllowedOrigin("*");
+            config.addAllowedOriginPattern("*"); // 보안 강화: "*" 대신 Pattern 사용
         }
 
-        source.registerCorsConfiguration("/**", config);
-
+        source.registerCorsConfiguration("/api/**", config); // 모든 경로가 아닌 /api 경로만 CORS 적용
         return new CorsFilter(source);
     }
 }

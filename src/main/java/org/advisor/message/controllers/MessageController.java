@@ -6,6 +6,7 @@ import org.advisor.globals.exceptions.BadRequestException;
 import org.advisor.globals.libs.Utils;
 import org.advisor.globals.rests.JSONData;
 import org.advisor.member.MemberUtil;
+import org.advisor.message.entities.Message;
 import org.advisor.message.service.MessageService;
 import org.advisor.message.validations.MessageValidator;
 import org.springframework.validation.Errors;
@@ -37,8 +38,8 @@ public class MessageController {
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
-        messageService.sendMessage(request);
-        return null;
+        Message message = messageService.sendMessage(request);
+        return new JSONData(message);
     }
 
     @PostMapping("/send")
@@ -49,21 +50,23 @@ public class MessageController {
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
-
-        return null;
+        Message message = messageService.sendMessage(request);
+        return new JSONData(message);
     }
 
-    @GetMapping("/list/{bid}")
-    public JSONData list(@PathVariable("bid") String bid) {
+    @GetMapping("/list/{mid}")
+    public JSONData list(@PathVariable("mid") String mid) {
         // 탭 형식을 사용해 페이지 이동을 하지 않아도 되도록
-        return null;
+        return new JSONData();
     }
 
     @GetMapping("/info/{seq}")
     public JSONData info(@PathVariable("seq") Long seq) {
         // 메세지 상세보기 / 회원 - 공지 알림, 이상 거래 알림, 본인이 보낸 문의 메시지 / 관리자 - 공지 알림, 이상 거래 알림, 모든 회원이 보낸 메시지 상세
         // 회원 -> 관리자에게 송신?
-        messageService.viewMessage(seq);
-        return null;
+        Message message = messageService.viewMessage(seq).orElseThrow(
+                () -> new BadRequestException("해당 메시지를 찾을 수 없습니다.")
+        );
+        return new JSONData(message);
     }
 }
