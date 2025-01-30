@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.advisor.globals.exceptions.BadRequestException;
 import org.advisor.globals.libs.Utils;
 import org.advisor.globals.rests.JSONData;
+import org.advisor.member.MemberUtil;
 import org.advisor.message.service.MessageService;
 import org.advisor.message.validations.MessageValidator;
 import org.springframework.validation.Errors;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class MessageController {
 
     private final MessageService messageService;
+    private final MemberUtil memberUtil;
     private final MessageValidator messageValidator;
     private final Utils utils;
 
@@ -39,8 +41,12 @@ public class MessageController {
     }
 
     @PostMapping("/notice/send")
-    public JSONData sendNo(@RequestBody @Valid RequestMessage request) {
+    public JSONData sendNo(@RequestBody @Valid RequestMessage request, Errors errors) {
         // 문의 메세지(회원이 관리자에게) - 검증을 통해 에러가 발견되지 않았다면 메세지 전송에 성공
+        if(!memberUtil.isAdmin()) {
+            throw new BadRequestException();
+        }
+        
 
         return null;
     }
