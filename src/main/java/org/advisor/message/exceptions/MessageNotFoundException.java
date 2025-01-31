@@ -1,6 +1,6 @@
 package org.advisor.message.exceptions;
 
-import org.advisor.globals.exceptions.CommonException;
+import org.advisor.global.exceptions.CommonException;
 import org.springframework.http.HttpStatus;
 
 public class MessageNotFoundException extends CommonException {

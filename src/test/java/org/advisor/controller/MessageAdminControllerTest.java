@@ -1,7 +1,7 @@
 package org.advisor.message.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.advisor.globals.rests.JSONData;
+import org.advisor.global.rests.JSONData;
 import org.advisor.member.MemberUtil;
 import org.advisor.message.service.MessageInfoService;
 import org.junit.jupiter.api.BeforeEach;

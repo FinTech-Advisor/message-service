@@ -1,7 +1,7 @@
 package org.advisor.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.advisor.globals.rests.JSONData;
+import org.advisor.global.rests.JSONData;
 import org.advisor.message.controllers.RequestMessage;
 import org.advisor.message.entities.Message;
 import org.advisor.message.service.MessageInfoService;

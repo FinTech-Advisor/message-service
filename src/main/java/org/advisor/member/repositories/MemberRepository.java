@@ -1,18 +1,16 @@
-package org.advisor.message.repositories;
+package org.advisor.member.repositories;
 
+import org.advisor.member.entities.Member;
 import org.advisor.member.entities.QMember;
-import org.advisor.message.entities.Message;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Optional;
 
-@Repository
-public interface MessageRepository extends JpaRepository<Message, Long>, QuerydslPredicateExecutor<Message> {
+public interface MemberRepository extends JpaRepository<Member, Long>, QuerydslPredicateExecutor<Member> {
     @EntityGraph(attributePaths = "authorities")
-    List<Message> findByReceiver(String email);
+    Optional<Member> findByEmail(String email);
 
     default boolean exists(String email) {
         QMember member = QMember.member;

@@ -2,8 +2,8 @@ package org.advisor.message.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.advisor.globals.exceptions.BadRequestException;
-import org.advisor.globals.rests.JSONData;
+import org.advisor.global.exceptions.BadRequestException;
+import org.advisor.global.rests.JSONData;
 import org.advisor.member.MemberUtil;
 import org.advisor.message.service.MessageInfoService;
 import org.springframework.context.MessageSource;
@@ -23,7 +23,7 @@ public class MessageAdminController {
     /**
      * 특정 회원에게 메시지 전송
      */
-    @PostMapping("/send/member/{mid}")
+    @PostMapping("/send/{mid}")
     public JSONData sendToMember(@PathVariable String mid, @RequestBody @Valid RequestMessage request) {
         if (!memberUtil.isAdmin()) {
             throw new BadRequestException(messageSource.getMessage("error.admin_only", null, Locale.getDefault()));
@@ -34,8 +34,8 @@ public class MessageAdminController {
     /**
      * 특정 그룹에게 메시지 전송
      */
-    @PostMapping("/send/group/{groupId}")
-    public JSONData sendToGroup(@PathVariable String groupId, @RequestBody @Valid RequestMessage request) {
+    @PostMapping("/send/{mid}")
+    public JSONData sendToGroup(@PathVariable String mid, @RequestBody @Valid RequestMessage request) {
         if (!memberUtil.isAdmin()) {
             throw new BadRequestException(messageSource.getMessage("error.admin_only", null, Locale.getDefault()));
         }

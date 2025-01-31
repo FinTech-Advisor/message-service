@@ -1,8 +1,9 @@
 package org.advisor.message.service;
 
 import lombok.RequiredArgsConstructor;
-import org.advisor.member.Member;
+import org.advisor.member.entities.Member;
 import org.advisor.member.MemberUtil;
+import org.advisor.member.exceptions.MemberNotFoundException;
 import org.advisor.message.constants.MessageStatus;
 import org.advisor.message.controllers.RequestMessage;
 import org.advisor.message.entities.Message;
@@ -15,13 +16,19 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MessageSendService {
     private final MemberUtil memberUtil;
-    private final MessageRepository repository;
-    private final Member member;
+    private final MessageRepository messageRepository;
 
     public Message process(RequestMessage form) {
 
         String email = form.getEmail();
-        Member receiver = !form.isNotice() ? memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new) : null;
+        String receiverEmail = null;
+
+        // 공지가 아니라면 수신자의 이메일을 조회
+        if (!form.isNotice()) {
+            Member receiver = messageRepository.findByEmail(email)
+                    .orElseThrow(MemberNotFoundException::new);
+            receiverEmail = receiver.getEmail(); // Member → String 변환
+        }
 
         Message message = Message.builder()
                 .gid(form.getGid())
@@ -29,12 +36,11 @@ public class MessageSendService {
                 .subject(form.getSubject())
                 .content(form.getContent())
                 .sender(memberUtil.getMember())
-                .receiver(receiver)
+                .receiver(receiverEmail)
                 .status(MessageStatus.UNREAD)
                 .build();
 
-        repository.saveAndFlush(message);
-
-        return message;
+        // 메시지 저장
+        return messageRepository.save(message);
     }
 }

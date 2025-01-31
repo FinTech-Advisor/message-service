@@ -2,9 +2,9 @@ package org.advisor.message.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.advisor.globals.exceptions.BadRequestException;
-import org.advisor.globals.libs.Utils;
-import org.advisor.globals.rests.JSONData;
+import org.advisor.global.exceptions.BadRequestException;
+import org.advisor.global.libs.Utils;
+import org.advisor.global.rests.JSONData;
 import org.advisor.message.entities.Message;
 import org.advisor.message.service.MessageInfoService;
 import org.advisor.message.validations.MessageValidator;

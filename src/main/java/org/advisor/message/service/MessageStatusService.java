@@ -17,7 +17,7 @@ public class MessageStatusService {
 
     public void change(Long seq) {
         Message item = infoService.get(seq);
-        if (item.isReceived()) { // 수신한 메세지만 열람 상태로 변경
+        if (item.isReceiver()) { // 수신한 메세지만 열람 상태로 변경
             item.setStatus(MessageStatus.READ);
         }
 

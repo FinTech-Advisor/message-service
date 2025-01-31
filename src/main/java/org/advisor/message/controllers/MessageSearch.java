@@ -1,7 +1,7 @@
 package org.advisor.message.controllers;
 
 import lombok.Data;
-import org.advisor.globals.paging.CommonSearch;
+import org.advisor.global.paging.CommonSearch;
 import org.advisor.message.constants.MessageReply;
 import org.advisor.message.constants.MessageStatus;
 import org.springframework.format.annotation.DateTimeFormat;
