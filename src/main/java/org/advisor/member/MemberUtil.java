@@ -20,7 +20,7 @@ public class MemberUtil {
     }
 
     // 로그인 회원 정보 조회
-    public String getMember() {
+    public Member getMember() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof Member) {

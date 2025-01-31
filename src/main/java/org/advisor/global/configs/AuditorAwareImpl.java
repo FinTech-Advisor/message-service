@@ -1,4 +1,4 @@
-package org.advisor.global.configs;
+package org.advisor.globals.configs;
 
 import lombok.RequiredArgsConstructor;
 import org.advisor.member.MemberUtil;

@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Builder
@@ -50,5 +51,9 @@ public class MemberInfo implements UserDetails {
         LocalDateTime credentialChangedAt = member.getCredentialChangedAt();
         return credentialChangedAt != null &&
                 credentialChangedAt.isAfter(LocalDateTime.now().minusMonths(1L));
+    }
+
+    public MemberInfo(Member member, List<GrantedAuthority> authorities) {
+        this.member = member;
     }
 }

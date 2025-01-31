@@ -1,7 +1,6 @@
 package org.advisor.message.service;
 
 import lombok.RequiredArgsConstructor;
-import org.advisor.member.entities.Member;
 import org.advisor.member.MemberUtil;
 import org.advisor.member.exceptions.MemberNotFoundException;
 import org.advisor.message.constants.MessageStatus;
@@ -25,9 +24,9 @@ public class MessageSendService {
 
         // 공지가 아니라면 수신자의 이메일을 조회
         if (!form.isNotice()) {
-            Member receiver = messageRepository.findByEmail(email)
-                    .orElseThrow(MemberNotFoundException::new);
-            receiverEmail = receiver.getEmail(); // Member → String 변환
+            receiverEmail = messageRepository.findByEmail(email) // 1. Optional<Message> 반환
+                    .orElseThrow(() -> new MemberNotFoundException()) // 2. MemberNotFoundException 던짐
+                    .getReceiver();
         }
 
         Message message = Message.builder()
@@ -35,7 +34,7 @@ public class MessageSendService {
                 .notice(form.isNotice())
                 .subject(form.getSubject())
                 .content(form.getContent())
-                .sender(memberUtil.getMember())
+                .sender(memberUtil.getMember().toString())
                 .receiver(receiverEmail)
                 .status(MessageStatus.UNREAD)
                 .build();

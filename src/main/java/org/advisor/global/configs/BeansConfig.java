@@ -1,4 +1,4 @@
-package org.advisor.global.configs;
+package org.advisor.globals.configs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

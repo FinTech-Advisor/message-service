@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.advisor.member.Member;
+import org.advisor.member.MemberUtil;
 import org.advisor.message.constants.MessageStatus;
 
 import java.time.LocalDateTime;
@@ -15,6 +17,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor @AllArgsConstructor
 @Table(indexes = @Index(name="idx_notice_created_at", columnList = "notice DESC, createdAt DESC"))
 public class Message {
+
+    private Member member;
+    private MemberUtil memberUtil;
+
+
     @Id @GeneratedValue
     private Long seq;
 
@@ -49,4 +56,12 @@ public class Message {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    public boolean isReceiver() {
+        // MemberUtil을 사용하여 현재 로그인한 사용자 정보 가져오기
+        Member currentUser = memberUtil.getMember();
+
+        // 수신자와 현재 로그인한 사용자가 같은지 비교
+        return this.receiver.equals(currentUser.getEmail());
+    }
 }

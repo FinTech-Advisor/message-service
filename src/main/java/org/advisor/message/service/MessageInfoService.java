@@ -51,4 +51,9 @@ public class MessageInfoService {
         });
         return messageOpt; // 조회된 메시지 반환
     }
+
+    public Message get(Long seq) {
+        return messageRepository.findById(seq)
+                .orElseThrow(MessageNotFoundException::new);
+    }
 }
