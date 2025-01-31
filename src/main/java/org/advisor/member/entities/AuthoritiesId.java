@@ -9,6 +9,5 @@ import org.advisor.member.constants.Authority;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthoritiesId {
-    private Member member;
     private Authority authority;
 }

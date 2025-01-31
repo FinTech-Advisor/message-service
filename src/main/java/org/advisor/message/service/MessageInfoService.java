@@ -8,7 +8,6 @@ import org.advisor.message.exceptions.MessageNotFoundException;
 import org.advisor.message.repositories.MessageRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,8 +31,8 @@ public class MessageInfoService {
     }
 
     // 특정 회원이 받은 메시지 조회
-    public List<Message> listMessages(String mid) {
-        List<Message> messages = messageRepository.findByReceiver(mid);
+    public Optional<Message> listMessages(String mid) {
+        Optional<Message> messages = messageRepository.findByReceiver(mid);
         if (messages.isEmpty()) {
             throw new MessageNotFoundException();
         }

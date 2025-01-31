@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MemberUtil {
+
     // 로그인 상태 여부 체크
     public boolean isLogin() {
 

@@ -9,6 +9,7 @@ import org.advisor.message.entities.Message;
 import org.advisor.message.repositories.MessageRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Lazy
 @Service
@@ -17,6 +18,7 @@ public class MessageSendService {
     private final MemberUtil memberUtil;
     private final MessageRepository messageRepository;
 
+    @Transactional
     public Message process(RequestMessage form) {
 
         String email = form.getEmail();
@@ -24,9 +26,9 @@ public class MessageSendService {
 
         // 공지가 아니라면 수신자의 이메일을 조회
         if (!form.isNotice()) {
-            receiverEmail = messageRepository.findByEmail(email) // 1. Optional<Message> 반환
-                    .orElseThrow(() -> new MemberNotFoundException()) // 2. MemberNotFoundException 던짐
-                    .getReceiver();
+            Message message = messageRepository.findByReceiver(email) // 수정: findByEmail -> findByReceiver
+                    .orElseThrow(MemberNotFoundException::new); // 수정: 예외 타입 변경 (MemberNotFoundException -> RuntimeException 또는 사용자 정의 예외)
+            receiverEmail = message.getReceiver(); // Message 객체에서 수신자 이메일 가져오기
         }
 
         Message message = Message.builder()
@@ -34,12 +36,14 @@ public class MessageSendService {
                 .notice(form.isNotice())
                 .subject(form.getSubject())
                 .content(form.getContent())
-                .sender(memberUtil.getMember().toString())
+                .sender(memberUtil.getMember().getEmail())
                 .receiver(receiverEmail)
                 .status(MessageStatus.UNREAD)
                 .build();
 
         // 메시지 저장
-        return messageRepository.save(message);
+        messageRepository.saveAndFlush(message);
+
+        return message;
     }
 }

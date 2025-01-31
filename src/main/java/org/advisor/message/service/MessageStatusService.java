@@ -1,8 +1,6 @@
 package org.advisor.message.service;
 
 import lombok.RequiredArgsConstructor;
-import org.advisor.member.MemberInfo;
-import org.advisor.member.entities.Member;
 import org.advisor.message.constants.MessageStatus;
 import org.advisor.message.entities.Message;
 import org.advisor.message.repositories.MessageRepository;
@@ -38,16 +36,6 @@ public class MessageStatusService {
 
                 // 수신자 여부 판단
                 if (message.getReceiver().equals(currentUsername)) {
-                    message.setStatus(MessageStatus.READ);
-                    messageRepository.save(message);
-                }
-                // MemberInfo 타입인 경우
-            } else if (principal instanceof MemberInfo) {
-                MemberInfo memberInfo = (MemberInfo) principal;
-                Member currentMember = memberInfo.getMember();
-
-                // 수신자 여부 판단
-                if (message.getReceiver().equals(currentMember.getEmail())) {
                     message.setStatus(MessageStatus.READ);
                     messageRepository.save(message);
                 }

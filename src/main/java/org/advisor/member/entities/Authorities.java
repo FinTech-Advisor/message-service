@@ -14,9 +14,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Authorities implements Serializable {
-    @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Member member;
 
     @Id
     @Enumerated(EnumType.STRING)

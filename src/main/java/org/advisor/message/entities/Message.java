@@ -18,9 +18,7 @@ import java.time.LocalDateTime;
 @Table(indexes = @Index(name="idx_notice_created_at", columnList = "notice DESC, createdAt DESC"))
 public class Message {
 
-    private Member member;
     private MemberUtil memberUtil;
-
 
     @Id @GeneratedValue
     private Long seq;
