@@ -1,84 +1,62 @@
 package org.advisor.message.service;
 
 import lombok.RequiredArgsConstructor;
+import org.advisor.global.exceptions.BadRequestException;
 import org.advisor.member.entities.Member;
-import org.advisor.message.constants.MessageStatus;
+import org.advisor.member.repositories.MemberRepository;
 import org.advisor.message.controllers.RequestMessage;
 import org.advisor.message.entities.Message;
-import org.advisor.message.exceptions.MessageNotFoundException;
 import org.advisor.message.repositories.MessageRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.advisor.member.repositories.MemberRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class MessageInfoService {
 
     private final MessageRepository messageRepository;
     private final MemberRepository memberRepository;
 
-    // ... (loadUserByUsername 메서드 생략 - UserDetailsService 구현 안함) ...
+    /**
+     * 회원 ID로 Member 객체 조회 (중복 코드 정리)
+     */
+    private Member getMemberById(String id) {
+        return memberRepository.findById(Long.valueOf(id))
+                .orElseThrow(() -> new BadRequestException("회원을 찾을 수 없습니다."));
+    }
 
-    // 메시지 전송
+    /**
+     * 메시지 전송
+     */
+    @Transactional
     public Message sendMessage(RequestMessage request) {
-        // 현재 인증된 사용자의 정보를 가져옵니다.
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String currentUsername = userDetails.getUsername();
-
-        Member sender = memberRepository.findByEmail(currentUsername)
-                .orElse(null); // orElse(null)을 사용하여 회원 정보를 찾지 못한 경우 null을 반환하도록 수정
-
-        // 회원 정보를 찾지 못한 경우 예외 처리
-        if (sender == null) {
-            throw new RuntimeException("Sender not found with email: " + currentUsername);
-        }
-
-        Message message = Message.builder()
-                .gid(request.getGid()) // 메시지 그룹 ID (Q&A 관리 등에 활용 가능)
-                .sender(sender)  // 수정된 부분: 발신자 정보 (Member 객체)
-                .receiver("admin") // 기본적으로 관리자가 받는다고 가정
-                .subject(request.getSubject()) // 메시지 제목
-                .content(request.getContent()) // 메시지 내용
-                .status(MessageStatus.UNREAD) // 기본값: 읽지 않음
-                .build();
-
-        return messageRepository.save(message); // 메시지 DB에 저장
+        return messageRepository.save(Message.builder()
+                .gid(request.getGid())
+                .sender(getMemberById(request.getSender()))
+                .receiver(getMemberById(request.getReceiver()))
+                .subject(request.getSubject())
+                .content(request.getContent())
+                .status(request.getStatus())
+                .notice(request.isNotice())
+                .build());
     }
 
-    // 특정 회원이 받은 메시지 조회
+    /**
+     * 특정 회원이 보낸/받은 메시지 목록 조회
+     */
+    @Transactional(readOnly = true)
     public List<Message> listMessages(String mid) {
-        List<Message> messages = messageRepository.findByReceiver(mid);
-        if (messages.isEmpty()) {
-            throw new MessageNotFoundException();
-        }
-        return messages;
+        return messageRepository.findBySender_MidOrReceiver_Mid(mid, mid);
     }
 
-    // 메시지 조회 시 상태 변경 (UNREAD → READ)
-    public Message readMessage(Long seq) {
-        Message message = messageRepository.findById(seq)
-                .orElseThrow(MessageNotFoundException::new);
-
-        // 메시지의 상태가 UNREAD인 경우에만 READ로 변경
-        if (message.getStatus() == MessageStatus.UNREAD) {
-            message.setStatus(MessageStatus.READ);
-            messageRepository.save(message); // 상태 변경 저장
-        }
-
-        return message; // 조회된 메시지 반환
-    }
-
-    public Message get(Long seq) {
-        return messageRepository.findById(seq)
-                .orElseThrow(() -> new MessageNotFoundException());
+    /**
+     * 특정 메시지 상세 조회
+     */
+    @Transactional(readOnly = true)
+    public Optional<Message> viewMessage(Long seq) {
+        return messageRepository.findById(seq);
     }
 }

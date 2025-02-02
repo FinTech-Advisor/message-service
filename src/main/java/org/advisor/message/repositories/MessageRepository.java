@@ -2,12 +2,16 @@ package org.advisor.message.repositories;
 
 import org.advisor.message.entities.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
-import java.util.Optional;
+public interface MessageRepository extends JpaRepository<Message, Long> {
 
-@Repository
-public interface MessageRepository extends JpaRepository<Message, Long>, QuerydslPredicateExecutor<Message> {
-    Optional<Message> findByReceiver(String receiverEmail); // 수정: findByEmail -> findByReceiver
+    // 특정 회원이 보낸 메시지 조회
+    List<Message> findBySender_Mid(String mid);
+
+    // 특정 회원이 받은 메시지 조회
+    List<Message> findByReceiver_Mid(String mid);
+
+    // 특정 회원이 보낸/받은 메시지를 한 번에 조회
+    List<Message> findBySender_MidOrReceiver_Mid(String mid, String mid2);
 }

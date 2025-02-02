@@ -2,12 +2,17 @@ package org.advisor.message.controllers;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.advisor.message.constants.MessageStatus;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RequestMessage {
 
-    private boolean notice;
+    private boolean notice; // ✅ 기존 유지 (getter 자동 생성됨)
 
     @Email
     private String email; // 이메일 형식
@@ -25,8 +30,9 @@ public class RequestMessage {
     @NotBlank
     private String content; // 내용
 
-    /*
-    private List<FileInfo> editorImages;
-    private List<FileInfo> attachFiles;
-     */
+    private String sender; // ✅ 직접 값 전달
+    private String receiver; // ✅ 직접 값 전달
+
+    private MessageStatus status; // ✅ 추가: 메시지 상태 값
+
 }

@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -17,6 +18,8 @@ public class QMessage extends EntityPathBase<Message> {
 
     private static final long serialVersionUID = -617290247L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QMessage message = new QMessage("message");
 
     public final StringPath content = createString("content");
@@ -25,17 +28,15 @@ public class QMessage extends EntityPathBase<Message> {
 
     public final StringPath gid = createString("gid");
 
-    public final SimplePath<org.advisor.member.MemberUtil> memberUtil = createSimple("memberUtil", org.advisor.member.MemberUtil.class);
-
     public final StringPath mid = createString("mid");
 
     public final StringPath name = createString("name");
 
     public final BooleanPath notice = createBoolean("notice");
 
-    public final StringPath receiver = createString("receiver");
+    public final org.advisor.member.entities.QMember receiver;
 
-    public final StringPath sender = createString("sender");
+    public final org.advisor.member.entities.QMember sender;
 
     public final NumberPath<Long> seq = createNumber("seq", Long.class);
 
@@ -44,15 +45,25 @@ public class QMessage extends EntityPathBase<Message> {
     public final StringPath subject = createString("subject");
 
     public QMessage(String variable) {
-        super(Message.class, forVariable(variable));
+        this(Message.class, forVariable(variable), INITS);
     }
 
     public QMessage(Path<? extends Message> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QMessage(PathMetadata metadata) {
-        super(Message.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QMessage(PathMetadata metadata, PathInits inits) {
+        this(Message.class, metadata, inits);
+    }
+
+    public QMessage(Class<? extends Message> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.receiver = inits.isInitialized("receiver") ? new org.advisor.member.entities.QMember(forProperty("receiver")) : null;
+        this.sender = inits.isInitialized("sender") ? new org.advisor.member.entities.QMember(forProperty("sender")) : null;
     }
 
 }

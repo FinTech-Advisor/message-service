@@ -2,10 +2,7 @@ package org.advisor.member.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,6 +25,9 @@ public class Member implements UserDetails, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
+
+    @Column(length = 45, nullable = false, unique = true)
+    private String mid; // 사용자 ID (Message 엔티티에서 참조 가능)
 
     @Column(length = 30, nullable = false, unique = true)
     private String email;
@@ -54,9 +54,7 @@ public class Member implements UserDetails, Serializable {
     private String addressSub;
 
     private boolean requiredTerms1;
-
     private boolean requiredTerms2;
-
     private boolean requiredTerms3;
 
     @Column(length = 50)
@@ -86,7 +84,7 @@ public class Member implements UserDetails, Serializable {
 
     @Override
     public String getUsername() {
-        return email; // 사용자 이름으로 email 사용
+        return mid; // 사용자 이름으로 mid 사용
     }
 
     @Override
@@ -108,6 +106,4 @@ public class Member implements UserDetails, Serializable {
     public boolean isEnabled() {
         return true; // 계정 활성화 여부 확인 로직 추가 필요
     }
-
-
 }

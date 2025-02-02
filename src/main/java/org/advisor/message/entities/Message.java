@@ -1,46 +1,42 @@
 package org.advisor.message.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.advisor.member.Member;
-import org.advisor.member.MemberUtil;
+import lombok.*;
+import org.advisor.member.entities.Member;
 import org.advisor.message.constants.MessageStatus;
-
 import java.time.LocalDateTime;
 
 @Data
 @Entity
 @Builder
-@NoArgsConstructor @AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(indexes = @Index(name="idx_notice_created_at", columnList = "notice DESC, createdAt DESC"))
 public class Message {
 
-    private MemberUtil memberUtil;
-
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
 
     @Column(length = 45, nullable = false)
     private String mid;
 
     @Column(length = 45, nullable = false)
-    private String name; // ex)bid -> freetalk 일경우 name은 자유게시판 name은 한국어 변환시켰다고 생각하기 freetalk -> 자유게시판 / QNA -> 질의문답
+    private String name;
 
-    @Column(length=45, nullable = false)
     private String gid;
 
     @Enumerated(EnumType.STRING)
     @Column(length=10, nullable = false)
     private MessageStatus status;
 
-    @JoinColumn(name="sender")
-    private String sender;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="sender_id", nullable = false)
+    private Member sender;
 
-    @JoinColumn(name="receiver")
-    private String receiver;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="receiver_id", nullable = false)
+    private Member receiver;
 
     @Column(length = 120, nullable = false)
     private String subject;
@@ -50,16 +46,18 @@ public class Message {
     private String content;
 
     @Column(nullable = false)
-    private Boolean notice; // 인덱스에서 사용됨
+    private Boolean notice;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public boolean isReceiver() {
-        // MemberUtil을 사용하여 현재 로그인한 사용자 정보 가져오기
-        Member currentUser = memberUtil.getMember();
+    // 메시지 생성 시 자동으로 createdAt 설정
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
-        // 수신자와 현재 로그인한 사용자가 같은지 비교
-        return this.receiver.equals(currentUser.getEmail());
+    public boolean isReceiver(Member currentUser) {
+        return this.receiver.equals(currentUser);
     }
 }

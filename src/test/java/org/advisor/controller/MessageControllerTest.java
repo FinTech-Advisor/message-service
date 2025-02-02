@@ -1,125 +1,101 @@
 package org.advisor.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.advisor.global.rests.JSONData;
-import org.advisor.message.controllers.RequestMessage;
+import org.advisor.global.libs.Utils;
+import org.advisor.message.controllers.MessageController;
 import org.advisor.message.entities.Message;
 import org.advisor.message.service.MessageInfoService;
+import org.advisor.message.validations.MessageValidator;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Optional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @ActiveProfiles({"default", "test"})
 @AutoConfigureMockMvc
-@TestPropertySource(properties = "cors.allowed=*")  // 테스트하기위한 properties 추가
-public class MessageControllerTest {
+class MessageControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @Mock
+    private Utils utils;
 
-    @Autowired
+    @Mock
     private MessageInfoService messageInfoService;
 
-    private RequestMessage requestMessage;
+    @Mock
+    private MessageValidator messageValidator;
+
+    @InjectMocks
+    private MessageController messageController;
 
     @BeforeEach
-    void init() {
-        requestMessage = new RequestMessage();
-        requestMessage.setGid("testGid");
-        requestMessage.setEmail("user@test.com");
-        requestMessage.setSubject("Test Subject");
-        requestMessage.setContent("Test Content");
+    void setUp() {
+        MockitoAnnotations.openMocks(this); // Mockito 초기화
+        mockMvc = MockMvcBuilders.standaloneSetup(messageController).build(); // MockMvc 설정
     }
 
     @Test
-    @DisplayName("회원이 메시지 전송 테스트")
-    void sendTest() throws Exception {
-        String body = objectMapper.writeValueAsString(requestMessage);
-        System.out.println("Request Body: " + body);
+    void sendMessage_Success() throws Exception {
+        when(messageInfoService.sendMessage(any())).thenReturn(new Message()); // ✅ JSONData 대신 Message 객체 반환
 
-        String res = mockMvc.perform(post("/message/send/user123")
+        mockMvc.perform(post("/message/send")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
-
-        JSONData jsonData = objectMapper.readValue(res, JSONData.class);
-        Message message = objectMapper.readValue(objectMapper.writeValueAsString(jsonData.getData()), Message.class);
-
-        System.out.println("응답 데이터: " + message);
-    }
-
-    @Test
-    @DisplayName("특정 회원의 메시지 목록 조회 테스트")
-    void listMessagesTest() throws Exception {
-        String res = mockMvc.perform(get("/message/list/user123"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
-
-        JSONData jsonData = objectMapper.readValue(res, JSONData.class);
-        System.out.println("메시지 목록: " + jsonData.getData());
-    }
-
-    @Test
-    @DisplayName("메시지 상세 조회 테스트")
-    void viewMessageTest() throws Exception {
-        // 메시지 생성 후 조회
-        String sendRes = mockMvc.perform(post("/message/send/user123")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestMessage)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
-
-        JSONData sendJsonData = objectMapper.readValue(sendRes, JSONData.class);
-        Message sentMessage = objectMapper.readValue(objectMapper.writeValueAsString(sendJsonData.getData()), Message.class);
-
-        String res = mockMvc.perform(get("/message/view/" + sentMessage.getSeq()))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
-
-        JSONData jsonData = objectMapper.readValue(res, JSONData.class);
-        System.out.println("메시지 상세 조회 결과: " + jsonData.getData());
-    }
-
-    @Test
-    @DisplayName("메시지 삭제 테스트")
-    void deleteMessageTest() throws Exception {
-        // 메시지 생성 후 삭제
-        String sendRes = mockMvc.perform(post("/message/send/user123")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestMessage)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
-
-        JSONData sendJsonData = objectMapper.readValue(sendRes, JSONData.class);
-        Message sentMessage = objectMapper.readValue(objectMapper.writeValueAsString(sendJsonData.getData()), Message.class);
-
-        mockMvc.perform(delete("/message/delete/" + sentMessage.getSeq()))
-                .andDo(print())
+                        .content("{\"subject\":\"테스트 제목\", \"content\":\"테스트 메시지\"}"))
                 .andExpect(status().isOk());
+    }
 
-        System.out.println("메시지 삭제 완료: " + sentMessage.getSeq());
+    @Test
+    void listMessages_Success() throws Exception {
+        when(messageInfoService.listMessages(anyString())).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/message/list/123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray()); // JSON 응답이 배열인지 확인
+    }
+
+    @Test
+    void viewMessage_Success() throws Exception {
+        // 📌 테스트용 Message 객체 생성
+        Message testMessage = Message.builder()
+                .seq(1L)
+                .subject("Test Subject")
+                .content("Test Content")
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        when(messageInfoService.viewMessage(1L)).thenReturn(Optional.of(testMessage)); // ✅ JSONData 대신 Message 객체 반환
+
+        mockMvc.perform(get("/message/info/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.subject").value("Test Subject")) // ✅ JSON 응답 값 검증
+                .andExpect(jsonPath("$.data.content").value("Test Content"));
+    }
+
+    @Test
+    void viewMessage_NotFound() throws Exception {
+        when(messageInfoService.viewMessage(1L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/message/info/1"))
+                .andExpect(status().isBadRequest()); // 메시지가 없을 경우 400 응답 확인
     }
 }

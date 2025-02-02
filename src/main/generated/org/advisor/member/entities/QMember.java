@@ -32,6 +32,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath email = createString("email");
 
+    public final StringPath mid = createString("mid");
+
     public final StringPath name = createString("name");
 
     public final StringPath nickName = createString("nickName");
