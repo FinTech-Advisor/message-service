@@ -10,24 +10,22 @@ public class MemberUtil {
 
     // 로그인 상태 여부 체크
     public boolean isLogin() {
-
         return getMember() != null;
     }
 
     // 관리자 여부 체크
     public boolean isAdmin() {
-
-        return isLogin() && getMember().get_authorities().stream().anyMatch(a -> a == Authority.ADMIN);
+        Member member = getMember();
+        return member != null && member.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals(Authority.ADMIN.name()));
     }
 
     // 로그인 회원 정보 조회
     public Member getMember() {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof Member) {
-            return (Member) authentication.getPrincipal();
+        if (authentication != null && authentication.getPrincipal() instanceof Member member) {
+            return member;
         }
-
         return null;
     }
 }

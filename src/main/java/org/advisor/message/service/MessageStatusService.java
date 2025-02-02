@@ -1,23 +1,26 @@
 package org.advisor.message.service;
 
-import lombok.RequiredArgsConstructor;
 import org.advisor.message.constants.MessageStatus;
 import org.advisor.message.entities.Message;
 import org.advisor.message.repositories.MessageRepository;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Lazy
 @Service
-@RequiredArgsConstructor
 public class MessageStatusService {
 
     private final MessageInfoService infoService;
     private final MessageRepository messageRepository;
+
+    @Autowired
+    public MessageStatusService(MessageInfoService infoService, MessageRepository messageRepository) {
+        this.infoService = infoService;
+        this.messageRepository = messageRepository;
+    }
 
     @Transactional
     public void change(Long seq) {
