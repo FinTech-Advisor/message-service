@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -17,20 +18,35 @@ public class QAuthorities extends EntityPathBase<Authorities> {
 
     private static final long serialVersionUID = -618465296L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QAuthorities authorities = new QAuthorities("authorities");
 
     public final EnumPath<org.advisor.member.constants.Authority> authority = createEnum("authority", org.advisor.member.constants.Authority.class);
 
+    public final NumberPath<Long> id = createNumber("id", Long.class);
+
+    public final QMember member;
+
     public QAuthorities(String variable) {
-        super(Authorities.class, forVariable(variable));
+        this(Authorities.class, forVariable(variable), INITS);
     }
 
     public QAuthorities(Path<? extends Authorities> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QAuthorities(PathMetadata metadata) {
-        super(Authorities.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QAuthorities(PathMetadata metadata, PathInits inits) {
+        this(Authorities.class, metadata, inits);
+    }
+
+    public QAuthorities(Class<? extends Authorities> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.member = inits.isInitialized("member") ? new QMember(forProperty("member")) : null;
     }
 
 }

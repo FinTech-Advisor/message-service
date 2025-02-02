@@ -1,34 +1,52 @@
 package org.advisor.message.service;
 
 import lombok.RequiredArgsConstructor;
-import org.advisor.member.MemberUtil;
-import org.advisor.member.exceptions.MemberNotFoundException;
+import org.advisor.member.entities.Member;
 import org.advisor.message.constants.MessageStatus;
 import org.advisor.message.controllers.RequestMessage;
 import org.advisor.message.entities.Message;
 import org.advisor.message.repositories.MessageRepository;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.advisor.member.repositories.MemberRepository;
 
-@Lazy
 @Service
 @RequiredArgsConstructor
 public class MessageSendService {
-    private final MemberUtil memberUtil;
     private final MessageRepository messageRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public Message process(RequestMessage form) {
-
         String email = form.getEmail();
         String receiverEmail = null;
 
         // 공지가 아니라면 수신자의 이메일을 조회
         if (!form.isNotice()) {
-            Message message = messageRepository.findByReceiver(email) // 수정: findByEmail -> findByReceiver
-                    .orElseThrow(MemberNotFoundException::new); // 수정: 예외 타입 변경 (MemberNotFoundException -> RuntimeException 또는 사용자 정의 예외)
-            receiverEmail = message.getReceiver(); // Message 객체에서 수신자 이메일 가져오기
+            Member receiver = memberRepository.findByEmail(email)
+                    .orElse(null); // 수신자를 찾지 못한 경우 null 반환
+            if (receiver != null) {
+                receiverEmail = receiver.getEmail();
+            } else {
+                // 수신자를 찾지 못한 경우 예외 처리 또는 기본값 설정
+                // 예: receiverEmail = "default@email.com";
+                // 또는 throw new RuntimeException("Receiver not found with email: " + email);
+            }
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String senderEmail = userDetails.getUsername(); // 사용자 이메일을 senderEmail로 설정
+
+        Member sender = memberRepository.findByEmail(senderEmail)
+                .orElse(null); // 발신자를 찾지 못한 경우 null 반환
+
+        if (sender == null) {
+            // 발신자를 찾지 못한 경우 예외 처리 또는 기본값 설정
+            // 예: throw new RuntimeException("Sender not found with email: " + senderEmail);
         }
 
         Message message = Message.builder()
@@ -36,14 +54,12 @@ public class MessageSendService {
                 .notice(form.isNotice())
                 .subject(form.getSubject())
                 .content(form.getContent())
-                .sender(memberUtil.getMember().getEmail())
+                .sender(sender) // 발신자 정보를 Member 객체로 설정
                 .receiver(receiverEmail)
                 .status(MessageStatus.UNREAD)
                 .build();
 
-        // 메시지 저장
         messageRepository.saveAndFlush(message);
-
         return message;
     }
 }
