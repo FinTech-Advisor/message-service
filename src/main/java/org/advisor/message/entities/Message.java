@@ -1,63 +1,48 @@
 package org.advisor.message.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.advisor.member.entities.Member;
+import lombok.Data;
+import org.advisor.member.constants.Authority;
+import org.advisor.message.constants.MessageReply;
 import org.advisor.message.constants.MessageStatus;
-import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(indexes = @Index(name="idx_notice_created_at", columnList = "notice DESC, createdAt DESC"))
 public class Message {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long seq;
-
-    @Column(length = 45, nullable = false)
+    @Column(length = 45)
     private String mid;
-
-    @Column(length = 45, nullable = false)
-    private String name;
 
     private String gid;
 
+    @Column(length = 90, nullable = false)
+    private String name;
+
     @Enumerated(EnumType.STRING)
-    @Column(length=10, nullable = false)
-    private MessageStatus status;
+    @Column(length=20, nullable = false)
+    private Authority listAuthority;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="sender_id", nullable = false)
-    private Member sender;
+    @Enumerated(EnumType.STRING)
+    @Column(length=20, nullable = false)
+    private Authority sendAuthority;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="receiver_id", nullable = false)
-    private Member receiver;
+    @Enumerated(EnumType.STRING)
+    @Column(length=20, nullable = false)
+    private Authority viewAuthority;
 
-    @Column(length = 120, nullable = false)
-    private String subject;
+    @Enumerated(EnumType.STRING)
+    @Column(length=20, nullable = false)
+    private MessageStatus chkRead;
 
-    @Lob
-    @Column(nullable = false)
-    private String content;
+    @Enumerated(EnumType.STRING)
+    @Column(length=20, nullable = false)
+    private MessageStatus chkUnread;
 
-    @Column(nullable = false)
-    private Boolean notice;
+    @Enumerated(EnumType.STRING)
+    private MessageReply Reply;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @Enumerated(EnumType.STRING)
+    private MessageReply noReply;
 
-    // 메시지 생성 시 자동으로 createdAt 설정
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public boolean isReceiver(Member currentUser) {
-        return this.receiver.equals(currentUser);
-    }
 }
