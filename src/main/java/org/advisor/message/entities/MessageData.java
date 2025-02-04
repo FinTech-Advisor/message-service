@@ -27,9 +27,6 @@ public class MessageData {
     @Column(length = 45, nullable = false)
     private String gid;
 
-    @Column(length = 45, nullable = false)
-    private String mid;
-
     @Enumerated(EnumType.STRING)
     @Column(length=10, nullable = false)
     private MessageStatus status;
